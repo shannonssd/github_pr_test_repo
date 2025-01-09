@@ -1,0 +1,21 @@
+FROM python:3.10-alpine@sha256:1cf0c63d9f573d17be9200c9940a4ce3b18971674b8bf1a596ffe5441802f647
+
+ENV PYTHONUNBUFFERED=1 \
+    POETRY_VERSION=1.8.0
+
+WORKDIR /app
+
+RUN apk add --no-cache gcc musl-dev geos geos-dev libffi-dev
+RUN pip install "poetry==$POETRY_VERSION"
+
+COPY pyproject.toml poetry.lock /app/
+
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
+
+RUN poetry config virtualenvs.in-project true \
+  && poetry install --no-interaction --no-ansi --no-cache --no-root --no-directory
+
+COPY . /app/
+
+RUN poetry install --no-interaction --no-ansi --no-cache

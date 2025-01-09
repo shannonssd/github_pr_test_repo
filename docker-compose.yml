@@ -1,0 +1,17 @@
+version: '3.11'
+
+services:
+  app:
+    platform: 'linux/amd64'
+    tty: true
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/.venv
+    container_name: extractify-api
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    # command: "gunicorn -w=4 --reload --access-logfile='-' --bind=0.0.0.0:8000 extractify_api.wsgi"
+    command: "poetry run python manage.py runserver 0.0.0.0:8000"
