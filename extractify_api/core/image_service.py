@@ -1,11 +1,12 @@
 import base64
 import os
 from io import BytesIO
-from typing import Dict, Sequence, Tuple
+from typing import Tuple
 
 import vertexai
 from langchain_core.messages import HumanMessage
 from langchain_google_vertexai import ChatVertexAI
+from pdf2image import convert_from_bytes
 from PIL import Image
 
 GOOGLE_PROJECT_NAME = os.environ.get("GOOGLE_PROJECT_NAME")
@@ -13,38 +14,58 @@ GOOGLE_VERTEX_AI_LOCATION = os.environ.get("GOOGLE_VERTEX_AI_LOCATION")
 
 
 def transform_base64_img_to_request_img(
-    base64_decoded_image: bytes,
-) -> Tuple[Dict[str, Sequence[object]], str, str]:
+    base64_decoded_image: bytes, file_format: str
+) -> Tuple[str, str]:
     """
-    Transform a decoded Base64 image into a request-friendly format.
+    Transform a decoded Base64 image or PDF into a request-friendly format.
     Converts the image to JPEG and re-encodes it as Base64.
     """
-    # Open the image using PIL
-    pil_image = Image.open(BytesIO(base64_decoded_image))
+    if file_format.lower() == "pdf":
+        base64_values = []
+        # Convert PDF to images
+        images = convert_from_bytes(base64_decoded_image)
+        if not images:
+            raise ValueError("No images found in the PDF file.")
 
-    # Ensure the image is in RGB mode
-    if pil_image.mode != "RGB":
-        pil_image = pil_image.convert("RGB")
+        for image in images:
+            # Ensure the image is in RGB mode
+            if image.mode != "RGB":
+                image = image.convert("RGB")
 
-    # Convert the image to JPEG format
-    output_buffered = BytesIO()
-    pil_image.save(output_buffered, format="JPEG")
-    output_buffered.seek(0)  # Reset buffer position for subsequent reads
+            # Convert the image to JPEG format
+            output_buffered = BytesIO()
+            image.save(output_buffered, format="JPEG")
+            output_buffered.seek(0)  # Reset buffer position for subsequent reads
 
-    # Re-encode the image as Base64
-    base64_value = base64.b64encode(output_buffered.getvalue()).decode("utf-8")
+            # Re-encode the image as Base64
+            base64_value = base64.b64encode(output_buffered.getvalue()).decode("utf-8")
+            base64_values.append(base64_value)
+
+            # Clean up the buffer to avoid potential memory issues
+            output_buffered.close()
+        print("base64_values:", base64_values)
+    else:
+        # Open the image using PIL
+        pil_image = Image.open(BytesIO(base64_decoded_image))
+
+        # Ensure the image is in RGB mode
+        if pil_image.mode != "RGB":
+            pil_image = pil_image.convert("RGB")
+
+        # Convert the image to JPEG format
+        output_buffered = BytesIO()
+        pil_image.save(output_buffered, format="JPEG")
+        output_buffered.seek(0)  # Reset buffer position for subsequent reads
+
+        # Re-encode the image as Base64
+        base64_values = [base64.b64encode(output_buffered.getvalue()).decode("utf-8")]
+
     request_image_format = "jpg"
 
-    # Simulate a file-like object for Flask handling
-    request_image = {
-        "filename": f"request_image.{request_image_format}",
-        "content": output_buffered,
-    }
-
-    return request_image, base64_value, request_image_format  # type: ignore
+    return base64_values, request_image_format
 
 
-def get_information_from_image(base64_image, image_format, document_type) -> str:
+def get_information_from_image(base64_images, image_format, document_type) -> str:
     """"""
     vertexai.init(project=GOOGLE_PROJECT_NAME, location=GOOGLE_VERTEX_AI_LOCATION)
     if document_type == "Thai ID":
@@ -148,19 +169,21 @@ def get_information_from_image(base64_image, image_format, document_type) -> str
         - Focus only on extracting structured details relevant to the example format.
         """
 
-    image_message = {
-        "type": "image_url",
-        "image_url": {"url": f"data:image/{image_format};base64,{base64_image}"},
-    }
     text_message = {
         "type": "text",
         "text": "What's in this image? provide full detail as possible. And also \n"
         + prompt.lower(),
     }
-    message = HumanMessage(content=[text_message, image_message])
+    content = [text_message]
+    for base64_image in base64_images:
+        content.append(
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/{image_format};base64,{base64_image}"},
+            }
+        )
+    message = HumanMessage(content=content)
 
-    output = ChatVertexAI(model_name="gemini-pro-vision", location="asia-southeast1").invoke(
-        [message]
-    )
+    output = ChatVertexAI(model="gemini-pro-vision", location="asia-southeast1").invoke([message])
 
     return output.content if output else ""

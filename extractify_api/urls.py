@@ -36,6 +36,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("extract-text", gpt.extract_text),
+    path("retrieve-data/<uuid:uuid>", gpt.retrieve_data),
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
     re_path(

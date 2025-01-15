@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-RUN apk add --no-cache gcc musl-dev geos geos-dev libffi-dev
+RUN apk add --no-cache gcc musl-dev geos geos-dev libffi-dev poppler-utils
 RUN pip install "poetry==$POETRY_VERSION"
 
 COPY pyproject.toml poetry.lock /app/
