@@ -68,7 +68,7 @@ def transform_base64_img_to_request_img(
 def get_information_from_image(base64_images, image_format, document_type) -> str:
     """"""
     vertexai.init(project=GOOGLE_PROJECT_NAME, location=GOOGLE_VERTEX_AI_LOCATION)
-    if document_type == "Thai ID":
+    if document_type == "ID Card":
         # flake8: noqa
         prompt = """
         You are an admin filling up the form with the new employee documents.
@@ -88,12 +88,12 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "วันบัตรหมดอายุ": "16 พ.ค. 2573"
             },
             "English": {
-                "Identification_Number": "1101401642141",
-                "Title_First_Name_Last_Name": "Mrs. Pariyakorn Chaimart",
-                "Date_of_Birth": "17 May 1989",
-                "Address": "110/450 Soi Ramkhamhaeng 188, Min Buri Subdistrict, Min Buri District, Bangkok",
-                "Card_Issuance_Date": "14 Dec 2021",
-                "Card_Expiration_Date": "16 May 2030"
+                "identification_number": "1101401642141",
+                "title_first_name_last_name": "Mrs. Pariyakorn Chaimart",
+                "date_of_birth": "17 May 1989",
+                "address": "110/450 Soi Ramkhamhaeng 188, Min Buri Subdistrict, Min Buri District, Bangkok",
+                "card_issuance_date": "14 Dec 2021",
+                "card_expiration_date": "16 May 2030"
             }
         }
 
@@ -110,6 +110,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         Instruction:
         1. Fill up the details into the JSON format
         2. Do not return data from the example if not found
+        3. For English date_of_birth, convert from Thai Buddhist calendar to Gregorian calendar
 
         Example JSON Format:
         {
@@ -138,28 +139,28 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "ไปที่": "-"
             },
             "English": {
-                "House_Registration_Number": "10140557121",
-                "Registration_Office": "Local Office, Ratchathewi District",
-                "Address_List": "69/8 Rangsit Road, Phayathai Subdistrict, Ratchathewi District, Bangkok",
-                "Village_Name": "-",
-                "House_Name": "-",
-                "House_Type": "House",
-                "House_Description": "-",
-                "Date_of_Assignment_of_House_Number": "-",
-                "Name": "Mrs. Pojanee Vanapong",
-                "Nationality": "Thai",
-                "Gender": "Female",
-                "National_ID_Number": "3101403484655",
-                "Status": "",
-                "Date_of_Birth": "8 July 1960",
-                "Mother's_Name": "EngSiem",
-                "Mother's_National_ID_Number": "-",
-                "Mother's_Nationality": "Thai",
-                "Father's_Name": "Wanich",
-                "Father's_National_ID_Number": "3601000061859",
-                "Father's_Nationality": "Thai",
-                "From": "Civil Registration Database",
-                "To": "-"
+                "house_registration_number": "10140557121",
+                "registration_office": "Local Office, Ratchathewi District",
+                "address_list": "69/8 Rangsit Road, Phayathai Subdistrict, Ratchathewi District, Bangkok",
+                "village_name": "-",
+                "house_name": "-",
+                "house_type": "House",
+                "house_description": "-",
+                "date_of_assignment_of_house_number": "-",
+                "name": "Mrs. Pojanee Vanapong",
+                "nationality": "Thai",
+                "gender": "Female",
+                "national_id_number": "3101403484655",
+                "status": "",
+                "date_of_birth": "8 July 1960",
+                "mothers_name": "EngSiem",
+                "mothers_national_id_number": "-",
+                "mothers_nationality": "Thai",
+                "fathers_name": "Wanich",
+                "fathers_national_id_number": "3601000061859",
+                "fathers_nationality": "Thai",
+                "from": "Civil Registration Database",
+                "to": "-"
             }
         }
 
@@ -184,6 +185,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         )
     message = HumanMessage(content=content)
 
-    output = ChatVertexAI(model="gemini-pro-vision", location="asia-southeast1").invoke([message])
+    # models = ["gemini-pro-vision", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-2.0-flash-exp"]
+    output = ChatVertexAI(model="gemini-1.5-flash", location="asia-southeast1").invoke([message])
 
     return output.content if output else ""
