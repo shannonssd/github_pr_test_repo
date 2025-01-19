@@ -169,6 +169,173 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
         """
+    elif document_type == "Bank Book":
+        # flake8: noqa
+        prompt = """
+        You are an admin filling up the form with the new employee documents.
+
+        Instruction:
+        1. Fill up the details into the JSON format
+        2. Do not return data from the example if not found
+        3. For the branch_of_account english field, convert 'สำนักงาน/ สาขาบัญชี' from Thai to English
+
+        Example JSON Format:
+        {
+            "Thai": {
+                "เลขที่บัญชี": "7442831887",
+                "ชื่อบัญชี": "บจก. เอนนี่แวร์ ทู โก",
+                "สำนักงาน/ สาขาบัญชี": "อนุสาวรีย์ชัยสมรภูมิ"
+            },
+            "English": {
+                "account_number": "7442831887",
+                "account_name": "ANYWHERE 2 GO CO., LTD.",
+                "branch_of_account": "Victory Monument"
+            }
+        }
+
+        Important Notes:
+        - Ensure extracted data matches the correct language section (Thai or English).
+        - If the image does not contain a piece of information, do not return placeholders.
+        - Focus only on extracting structured details relevant to the example format.
+        """
+    elif document_type == "DBD":
+        # flake8: noqa
+        prompt = """
+        You are an admin filling up the form with the new employee documents.
+
+        Instruction:
+        1. Fill up the details into the JSON format
+        2. Do not return data from the example if not found
+
+        Example JSON Format:
+        {
+            "Thai": {
+                "วันที่จดทะเบียนนิติบุคคล":	"20 พฤษภาคม 2563",
+                "ทะเบียนนิติบุคคลเลขที่": "0505563006676",
+                "ชื่อบริษัท": "บริษัท โอ.พี. คอสเมติค กรุ๊ป จำกัด",
+                "จำนวนกรรมการบริษัท (คน)": "1",
+                "รายชื่อกรรมการบริษัท": "นาง ปริยากร ไชยมาคร",
+                "จำนวนหรือชื่อกรรมการซึ่งลงชื่อผูกพันบริษัทได้คือ":	"กรรมการหนึ่งคนลงลายมือชื่อ และประทับตราสำคัญของบริษัท",
+                "ทุนจดทะเบียน (บาท)": "5,000,000.00",
+                "ที่อยู่สำนักงานใหญ่": "131/19 หมู่ที่ 11 ตำบลนราภิรมย์ อำเภอบางเลน จังหวัดนครปฐม",
+                "จำนวนวัตถุประสงค์ของบริษัท (ข้อ)": "24",
+                "ออกเอกสารให้ ณ วันที่": "27 เดือน ตุลาคม พ.ศ. 2565"
+            },
+            "English": {
+                "corporate_registration_date": "20 May 2020",
+                "registration_number": "0505563006676",
+                "company_name": "O.P. COSMETIC GROUP CO., LTD.",
+                "number_of_directors_persons": "1",
+                "names_of_company_directors": "Mrs. Pariyakorn Chaimart",
+                "number_or_names_of_authorized_signatories_for_the_company": "One director signs and affixes the company's seal",
+                "registered_capital_baht": "5,000,000.00",
+                "headquarters_address": "131/19, Moo 11, Narapirom Subdistrict, Bang Len District, Nakhon Pathom Province",
+                "number_of_company_objectives_items": "24",
+                "document_issue_date": "27 October 2022"
+            }
+        }
+
+        Important Notes:
+        - Ensure extracted data matches the correct language section (Thai or English).
+        - If the image does not contain a piece of information, do not return placeholders.
+        - Focus only on extracting structured details relevant to the example format.
+        """
+    elif document_type == "CM Loan":
+        # flake8: noqa
+        prompt = """
+        You are an admin filling up the form with the new employee documents.
+
+        Instruction:
+        1. Fill up the details into the JSON format
+        2. Do not return data from the example if not found
+
+        Example JSON Format:
+        {
+            "Thai": {
+                "สัญญากู้เลขที่": "44011027",
+                "สัญญาฉบับนี้ทำขึ้นเมื่อวันที่": "25 มีนาคม พ.ศ. 2567",
+                "บริษัท (ผู้กู้)": "เจนเนอเรชั่น เอส จำกัด",
+                "ทะเบียนนิติบุคคลเลขที่": "0105554079295",
+
+                "ชื่อของผู้ให้สินเชื่อ": "บริษัท เคลียร์ แมทช์ แคปปิตอล จำกัด",
+                "วงเงินสินเชื่อ (บาท)": "200,000.00",
+                "วันเบิกใช้สินเชื่อ": "25 มีนาคม พ.ศ. 2567",
+
+                "ผู้ค้ำประกัน": "นาย สรศักดิ์ วงศ์ชินศรีสกุล",
+                "วัตถุประสงค์ของสินเชื่อ": "ใช้สำหรับชำระคืนหุ้นกู้คราวด์ฟันดิงเลขที่ 66000615 ของบริษัท เจนเนอเรชั่น เอส จำกัด โดยมีเงื่อนไขคือทางบริษัทฯ จะต้องทำการโอนเงินเพื่อชำระคืนหุ้นกู้ดังกล่าว เป็นจำนวนเงิน 133,801.35 บาท ภายในวันที่ 25 มีนาคม พ.ศ. 2567",
+                "อัตราดอกเบี้ย": "16% ต่อปี",
+                "งวดดอกเบี้ย": "1 เดือน",
+                "วันชำระคืนเงินกู้งวดสุดท้าย": "1 เดือน ถัดจากวันเบิกใช้สินเชื่อ",
+                "โครงสร้างการถือหุ้น": "นาย สรศักดิ์ วงศ์ชินศรีสกุล: 32.10%",
+
+                "บริษัท (ผู้รับเงิน)": "บริษัท เจนเนอเรชั่น เอส จำกัด",
+                "วันที่ (รับเงิน)": "25 มีนาคม พ.ศ. 2567",
+                "สัญญากู้ฉบับลงวันที่": "25 มีนาคม พ.ศ. 2567",
+                "ชื่อของผู้ให้สินเชื่อ": "บริษัท เคลียร์ แมทช์ แคปปิตอล จำกัด",
+                "จำนวนเงิน (บาท)": "200,000.00",
+
+                "เดือนที่ชำระ": "1",
+                "วันชำระคืนเงินกู้": "25 เมษายน พ.ศ. 2567",
+                "จำนวนที่ต้องชำระคืน (บาท)": "202,717.81",
+
+                "วันที่ (สัญญา)": "25 มีนาคม พ.ศ. 2567",
+                "บริษัท (ผู้ให้กู้)": "บริษัท เคลียร์ แมทช์ แคปปิตอล จำกัด",
+                "ชื่อ-นามสกุล (ผู้ค้ำประกัน)": "นาย สรศักดิ์ วงศ์ชินศรีสกุล",
+                "บัตรประจำตัวประชาชนเลขที่": "3100602664610",
+                "อาศัยอยู่ที่": "10/1 ซ.รามคำแหง 60 แยก 7 หัวหมาก บางกะปิ กรุงเทพมหานคร 10240",
+                "บริษัท (ผู้กู้)": "บริษัท เจนเนอเรชั่น เอส จำกัด",
+                "สัญญากู้เลขที่": "44011027",
+
+                "วัตถุประสงค์ของเอกสารที่ค้ำประกัน": "สินเชื่อเงินกู้ภายใต้สัญญากู้เลขที่ 44011027 ใช้สำหรับชำระคืนหุ้นกู้คราวด์ฟันดิงเลขที่ 66000615 ของบริษัท เจนเนอเรชั่น เอส จำกัด โดยมีเงื่อนไขคือทางบริษัทฯ จะต้องทำการโอนเงินเพื่อชำระคืนหุ้นกู้ดังกล่าว เป็นจำนวนเงิน 133,801.35 บาท ภายในวันที่ 25 มีนาคม พ.ศ. 2567",
+                "จำนวนเงินที่ค้ำประกัน": "(1) สองแสนบาทถ้วน (200,000.00 บาท) ภายใต้สัญญากู้ยืมเงิน และ (2) ดอกเบี้ยเงินกู้ ดอกเบี้ยผิดนัด ส่วนลด ค่านายหน้า ค่าภาระติดพัน และค่าใช้จ่ายต่างๆทั้งหมดที่ผู้กู้มีหรืออาจจะมีความรับผิดต่อผู้ให้กู้ ภายใต้เอกสารทางการเงินเป็นจำนวนทั้งหมดไม่เกิน สองแสนสองพันเจ็ดร้อยสิบเจ็ดบาทแปดสิบเอ็ดสตางค์ (202,717.81 บาท) ในกรณีที่ชำระเงินตรงตามที่กำหนด",
+                "ระยะเวลาค้ำประกัน": "ไม่เกินกว่าระยะเวลา 5 ปี นับจากวันที่เบิกใช้เงินกู้ ซึ่งตรงกับวันที่ 25 มีนาคม พ.ศ. 2572"
+            },
+            "English": {
+                "loan_agreement_number": "44011027",
+                "agreement_date": "March 25, 2024",
+                "company_borrower": "Generation S Company Limited",
+                "registration_number": "0105554079295",
+
+                "name_of_the_lender": "Clear Match Capital Company Limited",
+                "loan_amount_baht": "200,000.00",
+                "loan_disbursement_date": "March 25, 2024",
+
+                "guarantor": "Mr. Sorasak Wongchinsrisakul",
+                "purpose_of_the_loan": "The loan is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
+                "interest_rate": "16% per annum",
+                "interest_installment": "1 month",
+                "final_repayment_date": "1 month from the loan drawdown date",
+                "shareholding_structure": "Mr. Sorasak Wongchinsrisakul: 32.10%",
+
+                "company_payee": "Generation S Company Limited",
+                "loan_disbursement_date": "March 25, 2024",
+                "agreement_date": "March 25, 2024",
+                "name_of_the_lender": "Clear Match Capital Company Limited",
+                "loan_amount_baht": "200,000.00",
+
+                "repayment_month": "1",
+                "loan_repayment_date": "April 25, 2024",
+                "repayment_amount_baht": "202,717.81",
+
+                "agreement_date": "March 25, 2024",
+                "name_of_the_lender": "Clear Match Capital Company Limited",
+                "full_name_guarantor": "Mr. Sorasak Wongchinsrisakul",
+                "national_id_number": "3100602664610",
+                "address": "10/1 Soi Ramkhamhaeng 60, Yaek 7, Hua Mak, Bang Kapi, Bangkok 10240",
+                "company_borrower": "Generation S Company Limited",
+                "loan_agreement_number": "44011027",
+
+                "purpose_of_guarantee_document": "The loan under Loan Agreement No. 44011027 is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
+                "guaranteed_amount": "(1) Principal Amount: Two Hundred Thousand Baht (200,000.00 THB) under the loan agreement, and (2) Interest, Penalties, Discounts, Commission Fees, Encumbrance Fees, and Other Related Charges that the borrower is or may become liable for under the financial documents, totaling no more than Two Hundred Two Thousand Seven Hundred Seventeen Baht and Eighty-One Satang (202,717.81 THB), provided payments are made on time.",
+                "guarantee_period": "The guarantee period shall not exceed 5 years from the loan drawdown date, which corresponds to March 25, 2029."
+            }
+        }
+
+        Important Notes:
+        - Ensure extracted data matches the correct language section (Thai or English).
+        - If the image does not contain a piece of information, do not return placeholders.
+        - Focus only on extracting structured details relevant to the example format.
+        """
 
     text_message = {
         "type": "text",
@@ -176,6 +343,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         + prompt.lower(),
     }
     content = [text_message]
+
     for base64_image in base64_images:
         content.append(
             {
