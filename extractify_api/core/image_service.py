@@ -104,6 +104,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - Ensure extracted data matches the correct language section (Thai or English).
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
+        - Only return the JSON format as shown in the example.
         """
     elif document_type == "House Registration":
         # flake8: noqa
@@ -182,6 +183,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - Ensure extracted data matches the correct language section (Thai or English).
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
+        - Only return the JSON format as shown in the example.
         """
     elif document_type == "Bank Book":
         # flake8: noqa
@@ -213,6 +215,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - Ensure extracted data matches the correct language section (Thai or English).
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
+        - Only return the JSON format as shown in the example.
         """
     elif document_type == "DBD":
         # flake8: noqa
@@ -257,6 +260,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - Ensure extracted data matches the correct language section (Thai or English).
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
+        - Only return the JSON format as shown in the example.
         """
     elif document_type == "CM Loan":
         # flake8: noqa
@@ -393,6 +397,7 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
         - Ensure extracted data matches the correct language section (Thai or English).
         - If the image does not contain a piece of information, do not return placeholders.
         - Focus only on extracting structured details relevant to the example format.
+        - Only return the JSON format as shown in the example.
         """
 
     text_message = {
