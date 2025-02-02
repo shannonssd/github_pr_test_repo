@@ -64,8 +64,8 @@ def retrieve_data(uuid: str) -> Tuple[str, str, str]:
     image = cache.get(f"image_{uuid}")
     image_information = cache.get(f"image_information_{uuid}")
 
-    print("retrieved_cached_image:", image)
-    print("retrieved_cached_image_information:", image_information)
+    # print("retrieved_cached_image:", image)
+    # print("retrieved_cached_image_information:", image_information)
 
     # cache.delete(f"file_format_{uuid}")
     # cache.delete(f"image_{uuid}")

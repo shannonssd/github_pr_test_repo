@@ -43,7 +43,7 @@ def transform_base64_img_to_request_img(
 
             # Clean up the buffer to avoid potential memory issues
             output_buffered.close()
-        print("base64_values:", base64_values)
+        # print("base64_values:", base64_values)
     else:
         # Open the image using PIL
         pil_image = Image.open(BytesIO(base64_decoded_image))
@@ -71,11 +71,14 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     if document_type == "ID Card":
         # flake8: noqa
         prompt = """
-        You are an admin filling up the form with the new employee documents.
+        You are an admin filling up a form with a new employee's documents.
 
         Instruction:
-        1. Fill up the details into the JSON format
+        1. Fill up the details in JSON format
         2. Do not return data from the example if not found
+        3. For the 'Address' English field, convert 'ที่อยู่' from Thai to English.
+        4. Remove spaces between numbers from the 'Identification Number' field in the English section
+        5. Remove spaces between numbers from the 'เลขประจำตัวประชาชน' field in the Thai section
 
         Example JSON Format:
         {
@@ -88,12 +91,12 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "วันบัตรหมดอายุ": "16 พ.ค. 2573"
             },
             "English": {
-                "identification_number": "1101401642141",
-                "title_first_name_last_name": "Mrs. Pariyakorn Chaimart",
-                "date_of_birth": "17 May 1989",
-                "address": "110/450 Soi Ramkhamhaeng 188, Min Buri Subdistrict, Min Buri District, Bangkok",
-                "card_issuance_date": "14 Dec 2021",
-                "card_expiration_date": "16 May 2030"
+                "Identification Number": "1101401642141",
+                "Title, First name and Last name": "Mrs. Pariyakorn Chaimart",
+                "Date of Birth": "17 May 1989",
+                "Address": "110/450 Soi Ramkhamhaeng 188, Min Buri Subdistrict, Min Buri District, Bangkok",
+                "Card issuance date": "14 Dec 2021",
+                "Card expiration date": "16 May 2030"
             }
         }
 
@@ -105,12 +108,23 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     elif document_type == "House Registration":
         # flake8: noqa
         prompt = """
-        You are an admin filling up the form with the new employee documents.
+        You are an admin filling up a form with a new employee's documents.
 
         Instruction:
-        1. Fill up the details into the JSON format
+        1. Fill up the details in JSON format
         2. Do not return data from the example if not found
-        3. For English date_of_birth, convert from Thai Buddhist calendar to Gregorian calendar
+        3. For the 'Date of Birth' English field, convert 'เกิดเมื่อ' from Thai Buddhist calendar to Gregorian calendar
+        4. Remove dashes between the numbers in the 'House Registration Number', 'National Id Number' and Fathers National Id Number fields in the English section
+        5. Remove dashes between the numbers in the 'เลขรหัสประจำบ้าน', 'เลขประจำตัวประชาชน', and 'เลขประจำตัวประชาชน (บิดา)' fields in the Thai section
+        6. For the 'Address List' English field, convert 'รายการที่อยู่' from Thai to English.
+        7. For the 'Name' English field, convert 'ชื่อ' from Thai to English.
+        8. For the 'Nationality' English field, convert 'สัญชาติ' from Thai to English.
+        9. For the 'Gender' English field, convert 'เพศ' from Thai to English.
+        10. For the 'Status' English field, convert 'สถานภาพ' from Thai to English.
+        11. For the 'Mothers Name' English field, convert 'มารดาผู้ให้กำเนิด ชื่อ' from Thai to English.
+        12. For the 'Mothers Nationality' English field, convert 'สัญชาติ (มารดา)' from Thai to English.
+        13. For the 'Fathers Name' English field, convert 'บิดาผู้ให้กำเนิด ชื่อ' from Thai to English.
+        14. For the 'Fathers Nationality' English field, convert 'สัญชาติ (บิดา)' from Thai to English.
 
         Example JSON Format:
         {
@@ -139,28 +153,28 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "ไปที่": "-"
             },
             "English": {
-                "house_registration_number": "10140557121",
-                "registration_office": "Local Office, Ratchathewi District",
-                "address_list": "69/8 Rangsit Road, Phayathai Subdistrict, Ratchathewi District, Bangkok",
-                "village_name": "-",
-                "house_name": "-",
-                "house_type": "House",
-                "house_description": "-",
-                "date_of_assignment_of_house_number": "-",
-                "name": "Mrs. Pojanee Vanapong",
-                "nationality": "Thai",
-                "gender": "Female",
-                "national_id_number": "3101403484655",
-                "status": "",
-                "date_of_birth": "8 July 1960",
-                "mothers_name": "EngSiem",
-                "mothers_national_id_number": "-",
-                "mothers_nationality": "Thai",
-                "fathers_name": "Wanich",
-                "fathers_national_id_number": "3601000061859",
-                "fathers_nationality": "Thai",
-                "from": "Civil Registration Database",
-                "to": "-"
+                "House Registration Number": "10140557121",
+                "Registration Office": "Local Office, Ratchathewi District",
+                "Address List": "69/8 Rangsit Road, Phayathai Subdistrict, Ratchathewi District, Bangkok",
+                "Village Name": "-",
+                "House Name": "-",
+                "House Type": "House",
+                "House Description": "-",
+                "Date Of Assignment Of House Number": "-",
+                "Name": "Mrs. Pojanee Vanapong",
+                "Nationality": "Thai",
+                "Gender": "Female",
+                "National Id Number": "3101403484655",
+                "Status": "",
+                "Date Of Birth": "8 July 1960",
+                "Mothers Name": "EngSiem",
+                "Mothers National Id Number": "-",
+                "Mothers Nationality": "Thai",
+                "Fathers Name": "Wanich",
+                "Fathers National Id Number": "3601000061859",
+                "Fathers Nationality": "Thai",
+                "From": "Civil Registration Database",
+                "To": "-"
             }
         }
 
@@ -172,12 +186,14 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     elif document_type == "Bank Book":
         # flake8: noqa
         prompt = """
-        You are an admin filling up the form with the new employee documents.
+        You are an admin filling up a form with a new employee's documents.
 
         Instruction:
-        1. Fill up the details into the JSON format
+        1. Fill up the details in JSON format
         2. Do not return data from the example if not found
-        3. For the branch_of_account english field, convert 'สำนักงาน/ สาขาบัญชี' from Thai to English
+        3. For the 'Branch of Account' English field, convert 'สำนักงาน/ สาขาบัญชี' from Thai to English
+        4. Remove dashes from the 'Account Number' field in the English section
+        5. Remove dashes from the 'เลขที่บัญชี' field in the Thai section
 
         Example JSON Format:
         {
@@ -187,9 +203,9 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "สำนักงาน/ สาขาบัญชี": "อนุสาวรีย์ชัยสมรภูมิ"
             },
             "English": {
-                "account_number": "7442831887",
-                "account_name": "ANYWHERE 2 GO CO., LTD.",
-                "branch_of_account": "Victory Monument"
+                "Account Number": "7442831887",
+                "Account Name": "ANYWHERE 2 GO CO., LTD.",
+                "Branch of Account": "Victory Monument"
             }
         }
 
@@ -201,11 +217,13 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     elif document_type == "DBD":
         # flake8: noqa
         prompt = """
-        You are an admin filling up the form with the new employee documents.
+        You are an admin filling up a form with a new employee's documents.
 
         Instruction:
-        1. Fill up the details into the JSON format
+        1. Fill up the details in JSON format
         2. Do not return data from the example if not found
+        3. For the 'Headquarters Address' English field, convert 'ที่อยู่สำนักงานใหญ่' from Thai to English.
+
 
         Example JSON Format:
         {
@@ -222,16 +240,16 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "ออกเอกสารให้ ณ วันที่": "27 เดือน ตุลาคม พ.ศ. 2565"
             },
             "English": {
-                "corporate_registration_date": "20 May 2020",
-                "registration_number": "0505563006676",
-                "company_name": "O.P. COSMETIC GROUP CO., LTD.",
-                "number_of_directors_persons": "1",
-                "names_of_company_directors": "Mrs. Pariyakorn Chaimart",
-                "number_or_names_of_authorized_signatories_for_the_company": "One director signs and affixes the company's seal",
-                "registered_capital_baht": "5,000,000.00",
-                "headquarters_address": "131/19, Moo 11, Narapirom Subdistrict, Bang Len District, Nakhon Pathom Province",
-                "number_of_company_objectives_items": "24",
-                "document_issue_date": "27 October 2022"
+                "Corporate Registration Date": "20 May 2020",
+                "Registration Number": "0505563006676",
+                "Company Name": "O.P. COSMETIC GROUP CO., LTD.",
+                "Number of Directors (persons)": "1",
+                "Names of Company Directors": "Mrs. Pariyakorn Chaimart",
+                "Number or Names of Authorized Signatories for the Company": "One director signs and affixes the company's seal",
+                "Registered Capital (baht)": "5,000,000.00",
+                "Headquarters Address": "131/19, Moo 11, Narapirom Subdistrict, Bang Len District, Nakhon Pathom Province",
+                "Number of Company Objectives (items)": "24",
+                "Document Issue Date": "27 October 2022"
             }
         }
 
@@ -243,12 +261,52 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     elif document_type == "CM Loan":
         # flake8: noqa
         prompt = """
-        You are an admin filling up the form with the new employee documents.
+        You are an admin filling up a form with a new employee's documents.
 
         Instruction:
-        1. Fill up the details into the JSON format
+        1. Fill up the details in JSON format
         2. Do not return data from the example if not found
+        3. For the 'Address' English field, convert 'อาศัยอยู่ที่' from Thai to English.
+        4. The following fields should be extracted from the same page:
+            - 'สัญญากู้เลขที่'
+            - 'สัญญาฉบับนี้ทำขึ้นเมื่อวันที่'
+            - 'บริษัท (ผู้กู้)'
+            - 'ทะเบียนนิติบุคคลเลขที่'
+        5. The following fields should be extracted from the same page:
+            - 'ชื่อของผู้ให้สินเชื่อ'
+            - 'วงเงินสินเชื่อ (บาท)'
+            - 'วันเบิกใช้สินเชื่อ'
+        6. The following fields should be extracted from the same page:
+            - 'ผู้ค้ำประกัน'
+            - 'วัตถุประสงค์ของสินเชื่อ'
+            - 'อัตราดอกเบี้ย'
+            - 'งวดดอกเบี้ย'
+            - 'วันชำระคืนเงินกู้งวดสุดท้าย'
+            - 'โครงสร้างการถือหุ้น'
+        7. The following fields should be extracted from the same page:
+            - 'บริษัท (ผู้รับเงิน)'
+            - 'วันที่ (รับเงิน)'
+            - 'สัญญากู้ฉบับลงวันที่'
+            - 'ชื่อของผู้ให้สินเชื่อ'
+            - 'จำนวนเงิน (บาท)'
+        8. The following fields should be extracted from the same page:
+            - 'เดือนที่ชำระ'
+            - 'วันชำระคืนเงินกู้'
+            - 'จำนวนที่ต้องชำระคืน (บาท)'
+        9. The following fields should be extracted from the same page:
+            - 'วันที่ (สัญญา)'
+            - 'บริษัท (ผู้ให้กู้)'
+            - 'ชื่อ-นามสกุล (ผู้ค้ำประกัน)'
+            - 'บัตรประจำตัวประชาชนเลขที่'
+            - 'อาศัยอยู่ที่'
+            - 'บริษัท (ผู้กู้)'
+            - 'สัญญากู้เลขที่'
+        10. The following fields should be extracted from the same page:
+            - 'วัตถุประสงค์ของเอกสารที่ค้ำประกัน'
+            - 'จำนวนเงินที่ค้ำประกัน'
+            - 'ระยะเวลาค้ำประกัน'
 
+        
         Example JSON Format:
         {
             "Thai": {
@@ -291,43 +349,43 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
                 "ระยะเวลาค้ำประกัน": "ไม่เกินกว่าระยะเวลา 5 ปี นับจากวันที่เบิกใช้เงินกู้ ซึ่งตรงกับวันที่ 25 มีนาคม พ.ศ. 2572"
             },
             "English": {
-                "loan_agreement_number": "44011027",
-                "agreement_date": "March 25, 2024",
-                "company_borrower": "Generation S Company Limited",
-                "registration_number": "0105554079295",
+                "Loan Agreement Number (1)": "44011027",
+                "Agreement Date": "March 25, 2024",
+                "Company Borrower (1)": "Generation S Company Limited",
+                "Registration Number": "0105554079295",
 
-                "name_of_the_lender": "Clear Match Capital Company Limited",
-                "loan_amount_baht": "200,000.00",
-                "loan_disbursement_date": "March 25, 2024",
+                "Name Of The Lender (1)": "Clear Match Capital Company Limited",
+                "Loan Amount Baht (1)": "200,000.00",
+                "Loan Disbursement Date (1)": "March 25, 2024",
 
-                "guarantor": "Mr. Sorasak Wongchinsrisakul",
-                "purpose_of_the_loan": "The loan is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
-                "interest_rate": "16% per annum",
-                "interest_installment": "1 month",
-                "final_repayment_date": "1 month from the loan drawdown date",
-                "shareholding_structure": "Mr. Sorasak Wongchinsrisakul: 32.10%",
+                "Guarantor": "Mr. Sorasak Wongchinsrisakul",
+                "Purpose Of The Loan": "The loan is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
+                "Interest Rate": "16% per annum",
+                "Interest Installment": "1 month",
+                "Final Repayment Date": "1 month from the loan drawdown date",
+                "Shareholding Structure": "Mr. Sorasak Wongchinsrisakul: 32.10%",
 
-                "company_payee": "Generation S Company Limited",
-                "loan_disbursement_date": "March 25, 2024",
-                "agreement_date": "March 25, 2024",
-                "name_of_the_lender": "Clear Match Capital Company Limited",
-                "loan_amount_baht": "200,000.00",
+                "Company Payee": "Generation S Company Limited",
+                "Loan Disbursement Date (2)": "March 25, 2024",
+                "Agreement Date (1)": "March 25, 2024",
+                "Name Of The Lender (2)": "Clear Match Capital Company Limited",
+                "Loan Amount Baht (2)": "200,000.00",
 
-                "repayment_month": "1",
-                "loan_repayment_date": "April 25, 2024",
-                "repayment_amount_baht": "202,717.81",
+                "Repayment Month": "1",
+                "Loan Repayment Date": "April 25, 2024",
+                "Repayment Amount Baht": "202,717.81",
 
-                "agreement_date": "March 25, 2024",
-                "name_of_the_lender": "Clear Match Capital Company Limited",
-                "full_name_guarantor": "Mr. Sorasak Wongchinsrisakul",
-                "national_id_number": "3100602664610",
-                "address": "10/1 Soi Ramkhamhaeng 60, Yaek 7, Hua Mak, Bang Kapi, Bangkok 10240",
-                "company_borrower": "Generation S Company Limited",
-                "loan_agreement_number": "44011027",
+                "Agreement Date (2)": "March 25, 2024",
+                "Name Of The Lender (3)": "Clear Match Capital Company Limited",
+                "Full Name Guarantor": "Mr. Sorasak Wongchinsrisakul",
+                "National Id Number": "3100602664610",
+                "Address": "10/1 Soi Ramkhamhaeng 60, Yaek 7, Hua Mak, Bang Kapi, Bangkok 10240",
+                "Company Borrower (2)": "Generation S Company Limited",
+                "Loan Agreement Number (2)": "44011027",
 
-                "purpose_of_guarantee_document": "The loan under Loan Agreement No. 44011027 is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
-                "guaranteed_amount": "(1) Principal Amount: Two Hundred Thousand Baht (200,000.00 THB) under the loan agreement, and (2) Interest, Penalties, Discounts, Commission Fees, Encumbrance Fees, and Other Related Charges that the borrower is or may become liable for under the financial documents, totaling no more than Two Hundred Two Thousand Seven Hundred Seventeen Baht and Eighty-One Satang (202,717.81 THB), provided payments are made on time.",
-                "guarantee_period": "The guarantee period shall not exceed 5 years from the loan drawdown date, which corresponds to March 25, 2029."
+                "Purpose Of Guarantee Document": "The loan under Loan Agreement No. 44011027 is to be used for repaying the crowdfunding debenture No. 66000615 of Generation S Company Limited. The condition is that the company must transfer funds to repay the aforementioned debenture in the amount of 133,801.35 THB by March 25, 2024.",
+                "Guaranteed Amount": "(1) Principal Amount: Two Hundred Thousand Baht (200,000.00 THB) under the loan agreement, and (2) Interest, Penalties, Discounts, Commission Fees, Encumbrance Fees, and Other Related Charges that the borrower is or may become liable for under the financial documents, totaling no more than Two Hundred Two Thousand Seven Hundred Seventeen Baht and Eighty-One Satang (202,717.81 THB), provided payments are made on time.",
+                "Guarantee Period": "The guarantee period shall not exceed 5 years from the loan drawdown date, which corresponds to March 25, 2029."
             }
         }
 
