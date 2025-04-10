@@ -420,3 +420,22 @@ def get_information_from_image(base64_images, image_format, document_type) -> st
     output = ChatVertexAI(model="gemini-1.5-flash", location="asia-southeast1").invoke([message])
 
     return output.content if output else ""
+
+    def test_pr():
+    # Test the function with a sample base64 image and document type
+    base64_image = 
+    "your_base64_encoded_image_here"
+    document_type = "ID Card"  # or "House Registration", "Bank Book", etc.
+    file_format = "jpg"  # or "pdf"
+
+    # Decode the base64 image
+    decoded_image = base64.b64decode(base64_image)
+
+    # Transform the image
+    base64_images, request_image_format = transform_base64_img_to_request_img(
+        decoded_image, file_format
+    )
+
+    # Get information from the image
+    extracted_info = get_information_from_image(base64_images, request_image_format, document_type)
+    print(extracted_info)
